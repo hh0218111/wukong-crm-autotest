@@ -1,19 +1,41 @@
-# 线索接口用例数据（格式与 login.yaml 同风格：一条数据=一个场景）
+# 线索接口用例数据（字段名、端点、边界值均已对本机实例实测确认 2026-11-17）
+# 关键事实：5kcrm_crm_leads.name 定义为 varchar(255)，接口层无长度校验
 cases:
   - case: 正常参数创建线索成功
     data:
-      customer_name: 自动化测试客户A
+      name: 自动化测试客户A
       mobile: "13800001111"
     expect_success: true
 
   - case: 客户名为空不允许创建
     data:
-      customer_name: ""
+      name: ""
       mobile: "13800002222"
     expect_success: false
 
-  - case: 客户名超长应被校验拦截
+  # 26字符：远未越界，应正常创建（原先误把它当"超长"，实测后修正）
+  - case: 26字符客户名应正常创建
     data:
-      customer_name: 很长很长很长很长很长很长很长很长很长很长很长很长很长
+      name: 很长很长很长很长很长很长很长很长很长很长很长很长很长
       mobile: "13800003333"
+    expect_success: true
+
+  # 255字符：字段上限边界，应能保存
+  - case: 255字符客户名边界内应创建成功
+    data:
+      name_ref: boundary_255
+      mobile: "13800005555"
+    expect_success: true
+
+  # 256字符：越过 varchar(255)，期望明确的业务校验失败而非 HTTP 500
+  - case: 256字符越界应被校验拦截而非抛异常
+    data:
+      name_ref: boundary_256
+      mobile: "13800004444"
     expect_success: false
+    expect_graceful: true   # 额外要求：必须是业务错误码，不能是 HTTP 500
+
+# 长字符串单独放，避免 yaml 里塞几百个汉字影响可读性
+boundaries:
+  boundary_255: 255
+  boundary_256: 256
