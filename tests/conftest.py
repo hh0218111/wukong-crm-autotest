@@ -11,6 +11,7 @@
 """
 from datetime import datetime
 
+import allure
 import pytest
 from playwright.sync_api import sync_playwright, Browser, BrowserContext, Page
 
@@ -62,19 +63,37 @@ def logged_in_page(page: Page) -> Page:
 
 # ---------- 失败自动截图 ----------
 
+def _find_page(item):
+    """从用例参数里找出任意一个 Playwright Page 对象。
+
+    早期版本只认 page / logged_in_page 两个名字，新增 fixture（如自检的 fake_page）
+    时钩子会静默失效 —— 现在改成按类型识别，新加多少种页面 fixture 都不用改这里。
+    """
+    for value in item.funcargs.values():
+        # 避免在没起浏览器的用例（纯配置自检）上误判
+        if hasattr(value, "screenshot") and hasattr(value, "goto"):
+            return value
+    return None
+
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """用例失败时自动截图存档，报告链接里可直接看 —— 回归失败不用重跑现场。"""
     outcome = yield
     report = outcome.get_result()
     if report.when == "call" and report.failed:
-        page = item.funcargs.get("page") or item.funcargs.get("logged_in_page")
+        page = _find_page(item)
         if page is not None:
             shots = settings.REPORTS_DIR / "screenshots"
             shots.mkdir(parents=True, exist_ok=True)
             name = f"{item.name}_{datetime.now():%H%M%S}"
             try:
-                page.screenshot(path=str(shots / f"{name}.png"), full_page=True)
+                shot = page.screenshot(path=str(shots / f"{name}.png"), full_page=True)
                 print(f"\n[失败截图] reports/screenshots/{name}.png")
+                # 同时挂进 Allure，看报告就能看到现场，不用去翻文件夹
+                allure.attach(shot, name="失败现场截图",
+                              attachment_type=allure.attachment_type.PNG)
+                allure.attach(page.url, name="失败时URL",
+                              attachment_type=allure.attachment_type.TEXT)
             except Exception:
                 pass  # 浏览器已崩溃等极端情况，截图失败不应掩盖原始报错

@@ -20,6 +20,10 @@ crm-autotest/
 │   ├── conftest.py        # fixture核心（浏览器/登录态/失败截图）
 │   ├── test_smoke_framework.py  # 框架自检（不依赖业务环境）
 │   ├── test_login_example.py    # UI数据驱动用例模板
+│   ├── selfcheck/         # 假站点端到端自检（不需要CRM环境）
+│   │   ├── conftest.py    #   fake_page fixture：拦截请求返回本地页面
+│   │   ├── fake_site/     #   静态假站点，选择器对齐真实PO
+│   │   └── test_fake_site_e2e.py
 │   └── api/
 │       └── test_leads_api.py    # 接口层：会话复用+鉴权+写后读闭环模板
 ├── .github/workflows/ci.yml       # push 触发自动跑（阶段一第3周接入）
@@ -36,8 +40,10 @@ pip install -r requirements.txt
 playwright install chromium
 copy .env.example .env       # 改成你的CRM地址和账号
 
-pytest -m "not skip_env"                       # 跑全部可跑用例
-pytest tests/test_smoke_framework.py -q        # 只跑框架自检
+pytest                                         # 默认跑不依赖环境的用例（当前应全绿：9 passed）
+pytest -m skip_env                             # 环境起来后，跑需要真实CRM的用例
+pytest tests/selfcheck -q                      # 假站点端到端自检（验证框架链路本身）
+pytest tests/test_smoke_framework.py -q        # 只跑配置/数据格式自检
 pytest --co -q                                 # 只看用例收集结果
 allure serve reports/allure-results            # 看可视化报告
 ```

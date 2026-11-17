@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>Fake CRM</title></head>
+<body>
+<form id="login">
+  <input id="username" placeholder="用户名">
+  <input id="password" placeholder="密码" type="password">
+  <button class="login-btn" type="button" onclick="doLogin()">登录</button>
+</form>
+<div class="el-message--error" id="error" style="display:none">用户名或密码错误</div>
+<div id="app" style="display:none"><h2 id="welcome">工作台</h2><p>线索管理 / 客户管理 / 商机</p></div>
+<script>
+function doLogin() {
+  var u = document.getElementById('username').value;
+  var p = document.getElementById('password').value;
+  if (u === 'admin' && p === 'admin123') {
+    document.cookie = 'session=fake-token; path=/';
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  } else {
+    document.getElementById('error').style.display = 'block';
+  }
+}
+if (document.cookie.indexOf('session=fake-token') !== -1) {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+</script>
+</body>
+</html>

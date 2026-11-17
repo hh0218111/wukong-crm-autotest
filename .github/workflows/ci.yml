@@ -18,8 +18,9 @@ jobs:
         run: |
           pip install -r requirements.txt
           playwright install --with-deps chromium
-      - name: 冒烟集（不依赖业务环境的自检）
-        run: pytest -m "not skip_env" --alluredir=reports/allure-results
+      - name: 冒烟集（框架自检，不依赖业务环境）
+        # 拦截真实网络请求的假站点自检 + 框架自检，CI 里永远能跑绿
+        run: pytest -m "smoke and not skip_env" --alluredir=reports/allure-results
       - name: 留存报告
         if: always()
         uses: actions/upload-artifact@v4
