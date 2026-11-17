@@ -2,29 +2,30 @@
 <html lang="zh-CN">
 <head><meta charset="utf-8"><title>Fake CRM</title></head>
 <body>
-<form id="login">
-  <input id="username" placeholder="用户名">
-  <input id="password" placeholder="密码" type="password">
-  <button class="login-btn" type="button" onclick="doLogin()">登录</button>
-</form>
-<div class="el-message--error" id="error" style="display:none">用户名或密码错误</div>
+<div class="login-by-pwd">
+  <input placeholder="请输入用户名">
+  <input placeholder="请输入密码" type="password">
+  <div class="btn" onclick="doLogin()">登 录</div>
+</div>
+<div class="el-form-item__error" id="error" style="display:none">用户名或密码错误</div>
 <div id="app" style="display:none"><h2 id="welcome">工作台</h2><p>线索管理 / 客户管理 / 商机</p></div>
 <script>
+function show() {
+  document.querySelector('.login-by-pwd').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  window.location.hash = '#/crm/workbench';
+}
 function doLogin() {
-  var u = document.getElementById('username').value;
-  var p = document.getElementById('password').value;
+  var u = document.querySelector("input[placeholder='请输入用户名']").value;
+  var p = document.querySelector("input[placeholder='请输入密码']").value;
   if (u === 'admin' && p === 'admin123') {
     document.cookie = 'session=fake-token; path=/';
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
+    show();
   } else {
     document.getElementById('error').style.display = 'block';
   }
 }
-if (document.cookie.indexOf('session=fake-token') !== -1) {
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-}
+if (document.cookie.indexOf('session=fake-token') !== -1) { show(); }
 </script>
 </body>
 </html>

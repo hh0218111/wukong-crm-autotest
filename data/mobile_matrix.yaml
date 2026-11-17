@@ -1,0 +1,26 @@
+# 客户手机号边界矩阵（迁移自旧用例内联 parametrize，改为数据外置）
+# expect_success: 业务上是否应该允许创建
+# known_bug: 已知缺陷号 —— 当前实现与预期不符，用 xfail 守护，修复后用例自动转红提醒
+cases:
+  - case: 11位合法手机号应创建成功
+    mobile: "13800000011"
+    expect_success: true
+
+  - case: 10位手机号应被拦截
+    mobile: "1380000000"
+    expect_success: false
+    known_bug: Bug#367
+
+  - case: 12位手机号应被拦截
+    mobile: "138000000111"
+    expect_success: false
+    known_bug: Bug#367
+
+  - case: 含字母手机号应被拦截
+    mobile: "abc123"
+    expect_success: false
+    known_bug: Bug#367
+
+  - case: 空手机号允许创建（非必填字段）
+    mobile: ""
+    expect_success: true

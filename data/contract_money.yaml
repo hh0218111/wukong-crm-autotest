@@ -1,0 +1,29 @@
+# 合同金额边界矩阵（迁移自旧 data/contract_data.json，统一为 yaml 风格）
+# expect_success 表达"业务上应不应该允许"，known_bug 标记当前实现与预期不符之处
+cases:
+  - case: 正常金额100
+    money: "100"
+    expect_success: true
+
+  - case: 最小正金额1
+    money: "1"
+    expect_success: true
+
+  - case: 大额边界999999.99
+    money: "999999.99"
+    expect_success: true
+
+  - case: 零金额应被拦截
+    money: "0"
+    expect_success: false
+    known_bug: 合同0金额未拦截
+
+  - case: 负金额应被拦截
+    money: "-100"
+    expect_success: false
+    known_bug: Bug#334
+
+  - case: 金额溢出应被拦截
+    money: "99999999999999999.99"
+    expect_success: false
+    known_bug: Bug#333
