@@ -1,0 +1,6 @@
+pytest>=8.0
+playwright>=1.48
+PyYAML>=6.0
+python-dotenv>=1.0
+allure-pytest>=2.13
+PyMySQL>=1.1

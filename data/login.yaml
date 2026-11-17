@@ -1,0 +1,21 @@
+# 登录用例的数据驱动源：加用例 = 加一条数据，不用改代码
+accounts:
+  - case: 正确账号密码登录成功
+    username: admin
+    password: admin123
+    expect_success: true
+
+  - case: 错误密码登录失败
+    username: admin
+    password: wrong_password
+    expect_success: false
+
+  - case: 用户名为空不允许登录
+    username: ""
+    password: admin123
+    expect_success: false
+
+  - case: 密码为空不允许登录
+    username: admin
+    password: ""
+    expect_success: false

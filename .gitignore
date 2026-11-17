@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+.env
+reports/allure-results/
+reports/screenshots/*
+!reports/screenshots/.gitkeep
+.pytest_cache/

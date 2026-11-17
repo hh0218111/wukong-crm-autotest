@@ -1,0 +1,28 @@
+name: UI Smoke CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+      - name: 冒烟集（不依赖业务环境的自检）
+        run: pytest -m "not skip_env" --alluredir=reports/allure-results
+      - name: 留存报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: reports/allure-results
