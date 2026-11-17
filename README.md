@@ -19,7 +19,9 @@ crm-autotest/
 ├── tests/
 │   ├── conftest.py        # fixture核心（浏览器/登录态/失败截图）
 │   ├── test_smoke_framework.py  # 框架自检（不依赖业务环境）
-│   └── test_login_example.py    # 数据驱动用例模板
+│   ├── test_login_example.py    # UI数据驱动用例模板
+│   └── api/
+│       └── test_leads_api.py    # 接口层：会话复用+鉴权+写后读闭环模板
 ├── .github/workflows/ci.yml       # push 触发自动跑（阶段一第3周接入）
 ├── pytest.ini             # marker定义与默认参数
 └── .env.example           # 环境模板

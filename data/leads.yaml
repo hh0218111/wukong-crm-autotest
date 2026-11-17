@@ -1,0 +1,19 @@
+# 线索接口用例数据（格式与 login.yaml 同风格：一条数据=一个场景）
+cases:
+  - case: 正常参数创建线索成功
+    data:
+      customer_name: 自动化测试客户A
+      mobile: "13800001111"
+    expect_success: true
+
+  - case: 客户名为空不允许创建
+    data:
+      customer_name: ""
+      mobile: "13800002222"
+    expect_success: false
+
+  - case: 客户名超长应被校验拦截
+    data:
+      customer_name: 很长很长很长很长很长很长很长很长很长很长很长很长很长
+      mobile: "13800003333"
+    expect_success: false
