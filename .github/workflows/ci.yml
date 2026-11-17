@@ -1,29 +1,38 @@
-name: UI Smoke CI
+name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
   pull_request:
 
 jobs:
   smoke:
+    name: 环境无关冒烟集
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
+
       - name: 安装依赖
         run: |
           pip install -r requirements.txt
           playwright install --with-deps chromium
-      - name: 冒烟集（框架自检，不依赖业务环境）
-        # 拦截真实网络请求的假站点自检 + 框架自检，CI 里永远能跑绿
+
+      # 只跑不依赖悟空CRM实例的用例：
+      # - 框架自检（配置/数据格式）
+      # - 假站点端到端自检（route 拦截，验证 PO/fixture/数据驱动链路）
+      # 需要真实CRM的用例标了 skip_env，CI 环境没有实例，必须排除。
+      - name: 冒烟集
         run: pytest -m "smoke and not skip_env" --alluredir=reports/allure-results
-      - name: 留存报告
+
+      - name: 留存 Allure 结果
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: reports/allure-results
+          retention-days: 7

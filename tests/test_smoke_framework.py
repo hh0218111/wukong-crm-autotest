@@ -2,8 +2,12 @@
 
 这个文件的意义：CI 里即使业务环境挂了，也能先回答"是框架坏了还是环境坏了"。
 """
+import pytest
+
 from config import settings
 from utils.yaml_loader import load_yaml
+
+pytestmark = pytest.mark.smoke
 
 
 def test_settings_loaded():
